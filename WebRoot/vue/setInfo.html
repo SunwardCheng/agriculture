@@ -1,0 +1,600 @@
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/agriculture/vue/assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/agriculture/vue/assets/img/favicon.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+    <title>农业信息云平台</title>
+
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+    <meta name="viewport" content="width=device-width" />
+
+    <link href="/agriculture/vue/assets/css/element.css" rel="stylesheet" />
+    <!-- Bootstrap core CSS     -->
+    <link href="/agriculture/vue/assets/css/bootstrap.min.css" rel="stylesheet" />
+
+
+    <!--  Paper Dashboard core CSS    -->
+    <link href="/agriculture/vue/assets/css/paper-dashboard.css" rel="stylesheet"/>
+	
+
+    <!--  Fonts and icons     -->
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/agriculture/vue/assets/css/themify-icons.css" rel="stylesheet">
+	<link href="/agriculture/vue/assets/css/imgupload.css" rel="stylesheet" />
+
+    <script src="/agriculture/vue/assets/js/vue.js" type="text/javascript"></script>
+    <script src="/agriculture/vue/assets/js/element.js" type="text/javascript"></script>
+    <script src="/agriculture/vue/assets/js/vue-resource.js" type="text/javascript" ></script>
+
+    <!--   Core JS Files   -->
+    <script src="/agriculture/vue/assets/js/jquery-1.10.2.js" type="text/javascript"></script>
+    <script src="/agriculture/vue/assets/js/bootstrap.min.js" type="text/javascript"></script>
+	
+	<!-- 文件上传的样式 -->
+	<link href="/agriculture/vue/assets/css/fileupload.css" rel="stylesheet"/>
+	<script src="/agriculture/vue/assets/js/setInfo.js" type="text/javascript"></script>
+</head>
+<body>
+
+<div class="wrapper" id="app">
+
+    <div class="sidebar" data-background-color="white" data-active-color="danger">
+
+        <!--
+            Tip 1: you can change the color of the sidebar's background using: data-background-color="white | black"
+            Tip 2: you can change the color of the active button using the data-active-color="primary | info | success | warning | danger"
+        -->
+
+        <div class="sidebar-wrapper">
+
+            <div class="logo">
+                <a href="#" class="simple-text">
+                    	设置
+                </a>
+            </div>
+            
+            <ul class="nav">
+            	<!-- <template scope="scope">
+            	</template> -->
+	            	<el-tree :data="setdata" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+            </ul>
+			
+			<div style="margin: 10px 0px 0px 180px">
+	           <a href="desktop.html" >返回桌面</a>
+			</div>
+    	</div>
+    </div>
+
+
+    <div class="main-panel" >
+        <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+            <!--<el-menu-item index="1"><i class="ti-panel">&nbsp;</i><a href="index.html">首页</a></el-menu-item>-->
+            <el-menu-item index="2"><i class="ti-info-alt">&nbsp;</i><a href="cropInfo.html">数据信息</a></el-menu-item>
+            <el-menu-item index="3"><i class="ti-video-camera">&nbsp;</i><a href="video.html">视频监控</a></el-menu-item>
+            <el-menu-item index="4"><i class="ti-settings">&nbsp;</i><a  :href="setUrl">设置</a></el-menu-item>
+
+            <div class="user">欢迎您
+                <span><a>{{userName}}</a></span>
+                <el-button type="text" style="color:red" @click="logout">退出</el-button>
+            </div>
+        </el-menu>
+
+
+
+        <div class="content" >
+
+            <div class="container-fluid">
+				<div v-show="userSet">
+                <div class="row" v-show="showSetInfo.user.addUser">
+                    <h4 class="title" style="text-align: center">添加用户</h4>
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="header">
+								<div class="registerdata" style="text-align: center" v-show="isAddUser">
+                                        <el-button type="primary" @click="addUser" center>点击添加</el-button>
+                                </div>
+                                
+                            </div>
+                            <div class="content">
+                                <div class="detectdata" v-show="registerUser" style="width:60%">
+                                    <el-form :model="userRuleForm" :rules="userRules" ref="userRuleForm" label-width="100px" class="demo-ruleForm">
+									  <el-form-item label="用户名" prop="name">
+									    <el-input v-model="userRuleForm.name"></el-input>
+									  </el-form-item>
+									  <el-form-item label="密    码" prop="password" >
+									    <el-input v-model="userRuleForm.password" type="password"></el-input>
+									  </el-form-item>
+									  <el-form-item label="权限" prop="authority">
+									    <el-radio-group v-model="userRuleForm.authority">
+									      <el-radio label="farmowner" v-model="userRuleForm.authority">农场主</el-radio>
+									      <el-radio label="administrator" v-model="userRuleForm.authority">超级管理员</el-radio>
+									    </el-radio-group>
+									  </el-form-item>
+									  <el-form-item label="邮    箱" prop="email" >
+									    <el-input v-model="userRuleForm.email" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="联系电话" prop="phone" >
+									    <el-input v-model="userRuleForm.phone" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="描    述" prop="depict" >
+									    <el-input v-model="userRuleForm.depict" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="选择农场" prop="farms">
+									    <el-checkbox-group v-model="userRuleForm.farmsChecked">
+									      <el-checkbox v-for="farm in userFarms" :label="farm" :key="farm">{{farm}}</el-checkbox>
+									    </el-checkbox-group>
+									  </el-form-item>
+									  <el-form-item align="center">
+									    <el-button type="primary" @click="addUserSubmit('userRuleForm')">立即创建</el-button>
+									    <el-button @click="resetForm('userRuleForm')">重置</el-button>
+									  </el-form-item>
+									</el-form>
+                                </div>
+                                <!--detectdata-->
+                                <div class="footer">
+                                    <hr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+				<div class="row" style="margin-top:-60px" v-show="showSetInfo.user.changeUser">
+					<br>
+					<br>
+					<br>
+                    <h4 class="title" style="text-align: center">修改用户</h4>
+                    <div class="col-md-12">
+                        <div class="card">
+                        </div>
+                            <div class="content" >
+                                
+                                <div class="changedata">
+                                    <el-table :data="users" style="width: 100%">
+                                        <el-table-column  label="用户" min-width="30" align="center">
+                                            <template scope="scope">
+                                                <el-input v-model="scope.row.userName" readonly></el-input>
+                                            </template>
+                                        </el-table-column>
+                                        
+                                        <el-table-column label="操作" min-width="50" align="center">
+                                            <template scope="scope">
+                                                <el-button   size="small" type="primary" @click="changeUserData(scope.$index, scope.row)">修改</el-button>
+                                                <el-button size="small" type="danger" @click="deleteUser(scope.$index, scope.row)">删除 </el-button> 
+                                            </template>
+                                        </el-table-column>
+
+                                    </el-table>
+                                 
+                                </div><!--detectdata-->
+                                <div class="footer">
+                                    <hr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row" style="margin-top:-60px" v-show="showSetInfo.user.changeData">
+                    <br>
+					<br>
+					<br>
+                    <h4 class="title" style="text-align: center">修改用户</h4>
+                    <div class="col-md-12">
+                        <div class="card">
+                            
+                            <div class="content" >
+                               	<div class="detectdata"  style="width:60%">
+                                    <el-form :model="userRuleForm" :rules="userRules" ref="userRuleForm" label-width="100px" class="demo-ruleForm">
+									  <el-form-item label="用户名" prop="name" >
+									    <el-input v-model="userRuleForm.name" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="密   码" prop="password" >
+									    <el-input v-model="userRuleForm.password" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="权    限" prop="authority">
+									    <el-radio-group v-model="userRuleForm.authority">
+									      <el-radio label="farmowner" v-model="userRuleForm.authority">农场主</el-radio>
+									      <el-radio label="administrator" v-model="userRuleForm.authority">超级管理员</el-radio>
+									    </el-radio-group>
+									  </el-form-item>
+									  <el-form-item label="邮    箱" prop="email" >
+									    <el-input v-model="userRuleForm.email" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="联系电话" prop="phone" >
+									    <el-input v-model="userRuleForm.phone" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="描    述" prop="depict" >
+									    <el-input v-model="userRuleForm.depict" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="拥有农场" prop="farms">
+									    <el-checkbox-group v-model="userRuleForm.farmsChecked">
+									      <el-checkbox v-for="farm in userFarms" :label="farm" :key="farm">{{farm}}</el-checkbox>
+									    </el-checkbox-group>
+									  </el-form-item>
+									  <el-form-item align="center">
+									    <el-button type="primary" @click="changeUserSubmit('userRuleForm')">立即修改</el-button>
+									    <el-button @click="cancel">取消</el-button>
+									  </el-form-item>
+									</el-form>
+                                </div>
+                            </div>
+                          
+                          
+                          </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <div v-show="farmSet">
+                	<div class="row" v-show="showSetInfo.farm.addFarm">
+                    <h4 class="title" style="text-align: center">添加农场</h4>
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="header">
+								<div class="registerdata" style="text-align: center" v-show="isAddUser">
+                                        <el-button type="primary" @click="addUser" center>点击添加</el-button>
+                                </div>
+                                
+                            </div>
+                            <div class="content">
+                                <div class="detectdata" v-show="registerUser" style="width:60%">
+                                    <el-form :model="farmRuleForm" :rules="farmRules" ref="farmRuleForm" label-width="100px" class="demo-ruleForm">
+									  <el-form-item label="农场名" prop="farmName">
+									    <el-input v-model="farmRuleForm.farmName"></el-input>
+									  </el-form-item>
+									  <el-form-item label="种植水果" prop="fruits">
+									    <el-checkbox-group v-model="farmRuleForm.fruitsChecked">
+									      <el-checkbox v-for="fruit in farmFruits" :label="fruit.fruitName" :key="fruit">{{fruit.fruitName}}</el-checkbox>
+									    </el-checkbox-group>
+									  </el-form-item>
+									  <el-form-item label="国    家" prop="country" >
+									    <el-input v-model="farmRuleForm.country" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="省    份" prop="province" >
+									    <el-input v-model="farmRuleForm.province" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="城    市" prop="city" >
+									    <el-input v-model="farmRuleForm.city" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="所在县或区" prop="district" >
+									    <el-input v-model="farmRuleForm.district" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="详细地址" prop="baseAddr" >
+									    <el-input v-model="farmRuleForm.baseAddr" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="农场面积" prop="baseArea" >
+									    <el-input v-model="farmRuleForm.baseArea" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="经    度" prop="longitude" >
+									    <el-input v-model="farmRuleForm.longitude" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="纬    度" prop="latitude" >
+									    <el-input v-model="farmRuleForm.latitude" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="农场图片">
+									  	  <div  class="con4">
+											  <img id="img1" style="width:300;height:300" src="" />
+											  <br><br>
+									  	  	  <span class="btn upload">浏览图片<input name="uploadFile" type="file" class="upload_pic" id="upfile1" @click="upload($event)"/></span>
+									  	  </div>
+									  </el-form-item>
+									  <el-form-item align="center">
+									    <el-button type="primary" @click="addFarmSubmit('farmRuleForm')">立即创建</el-button>
+									    <el-button @click="resetForm('farmRuleForm')">重置</el-button>
+									  </el-form-item>
+									</el-form>
+                                </div>
+                                <!--detectdata-->
+                                <div class="footer">
+                                    <hr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+				<div class="row" style="margin-top:-60px" v-show="showSetInfo.farm.changeFarm">
+					<br>
+					<br>
+					<br>
+                    <h4 class="title" style="text-align: center">修改农场</h4>
+                    <div class="col-md-12">
+                        <div class="card">
+                            
+                            <div class="content" >
+                                
+                                <div class="changedata">
+                                    <el-table :data="farms" style="width: 100%">
+                                        <el-table-column  label="农    场" min-width="30" align="center">
+                                            <template scope="scope">
+                                                <el-input v-model="scope.row.farmName" readonly></el-input>
+                                            </template>
+                                        </el-table-column>
+                                        
+                                        <el-table-column label="操作" min-width="50" align="center">
+                                            <template scope="scope">
+                                                <el-button   size="small" type="primary" @click="changeFarmData(scope.$index, scope.row)">修改</el-button>
+                                                <el-button size="small" type="danger" @click="deleteFarm(scope.$index, scope.row)">删除 </el-button> 
+                                                
+                                            </template>
+                                        </el-table-column>
+
+                                    </el-table>
+                                 
+                                </div><!--detectdata-->
+                                <div class="footer">
+                                    <hr>
+                                </div>
+                            </div>
+                            
+                          
+                          </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row" style="margin-top:-60px" v-show="showSetInfo.farm.changeData">
+                    <br>
+					<br>
+					<br>
+                    <h4 class="title" style="text-align: center">修改农场</h4>
+                    <div class="col-md-12">
+                        <div class="card">
+
+                            <div class="content" >
+                               	<div class="detectdata" style="width:60%">
+                                    <el-form :model="farmRuleForm" :rules="farmRules" ref="farmRuleForm" label-width="100px" id="formdata" class="demo-ruleForm" >
+									  <el-form-item label="农场名" prop="farmName">
+									    <el-input v-model="farmRuleForm.farmName"></el-input>
+									  </el-form-item>
+									  <el-form-item label="种植水果" prop="fruits">
+									    <el-checkbox-group v-model="farmRuleForm.fruitsChecked">
+									      <el-checkbox v-for="fruit in farmFruits" :label="fruit.fruitName" :key="fruit">{{fruit.fruitName}}</el-checkbox>
+									    </el-checkbox-group>
+									  </el-form-item>
+									  <el-form-item label="国    家" prop="country" >
+									    <el-input v-model="farmRuleForm.country" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="省    份" prop="province" >
+									    <el-input v-model="farmRuleForm.province" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="城    市" prop="city" >
+									    <el-input v-model="farmRuleForm.city" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="所在县或区" prop="district" >
+									    <el-input v-model="farmRuleForm.district" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="详细地址" prop="baseAddr" >
+									    <el-input v-model="farmRuleForm.baseAddr" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="农场面积" prop="baseArea" >
+									    <el-input v-model="farmRuleForm.baseArea" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="经    度" prop="longitude" >
+									    <el-input v-model="farmRuleForm.longitude" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="纬    度" prop="latitude" >
+									    <el-input v-model="farmRuleForm.latitude" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="农场图片">
+									  	  <div  class="con4">
+											  <img id="img2" style="width:350;height:260" :src="farmRuleForm.imageUrl" />
+											  <br><br>
+									  	  	  <span class="btn upload">浏览图片<input name="uploadFile" type="file" 
+									  	  	  		class="upload_pic" id="upfile2" @click="upload($event)"/></span>
+									  	  </div>
+									  </el-form-item>
+									  <el-form-item align="center">
+									    <el-button type="primary" @click="changeFarmSubmit('farmRuleForm')">立即修改</el-button>
+									    <el-button @click="cancel">取消</el-button>
+									  </el-form-item>
+									</el-form>
+                                </div>
+                                <!--detectdata-->
+                                <div class="footer">
+                                    <hr>
+                                </div>
+                            </div>
+                            
+                          
+                          </div>
+                        </div>
+                    </div>
+                    
+                    </div>
+                    
+                    
+                    <div v-show="fruitSet">
+                <div class="row" v-show="showSetInfo.fruit.addFruit">
+                    <h4 class="title" style="text-align: center">添加作物</h4>
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="header">
+								<div class="registerdata" style="text-align: center" v-show="isAddUser">
+                                        <el-button type="primary" @click="addUser" center>点击添加</el-button>
+                                </div>
+                                
+                            </div>
+                            <div class="content">
+                                <div class="detectdata" v-show="registerUser" style="width:55%">
+                                    <el-form :model="fruitRuleForm" :rules="fruitRules" ref="fruitRuleForm" label-width="120px" class="demo-ruleForm">
+									  <el-form-item label="水果名" prop="fruitName">
+									    <el-input v-model="fruitRuleForm.fruitName"></el-input>
+									  </el-form-item>
+									  <el-form-item label="特征描述" prop="feature" >
+									    <el-input v-model="fruitRuleForm.feature" type="textarea" autosize></el-input>
+									  </el-form-item>
+									  <el-form-item label="最大空气温度" prop="maxAirTemp" >
+									    <el-input v-model="fruitRuleForm.maxAirTemp" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="最小空气温度" prop="minAirTemp" >
+									    <el-input v-model="fruitRuleForm.minAirTemp" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="最大空气湿度" prop="maxAirHumi" >
+									    <el-input v-model="fruitRuleForm.maxAirHumi" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="最小空气湿度" prop="minAirHumi">
+									    <el-input v-model="fruitRuleForm.minAirHumi" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="最大土壤温度" prop="maxSoilTemp" >
+									    <el-input v-model="fruitRuleForm.maxSoilTemp" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="最小土壤温度" prop="minSoilTemp">
+									    <el-input v-model="fruitRuleForm.minSoilTemp" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="最大土壤湿度" prop="maxSoilHumi" >
+									    <el-input v-model="fruitRuleForm.maxSoilHumi" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="最小土壤湿度" prop="minSoilHumi">
+									    <el-input v-model="fruitRuleForm.minSoilHumi" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="最大光照强度" prop="maxLight" >
+									    <el-input v-model="fruitRuleForm.maxLight" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="最小光照强度" prop="minLight">
+									    <el-input v-model="fruitRuleForm.minLight" ></el-input>
+									  </el-form-item>
+									  <el-form-item align="center">
+									    <el-button type="primary" @click="addFruitSubmit('fruitRuleForm')">立即创建</el-button>
+									    <el-button @click="resetForm('fruitRuleForm')">重置</el-button>
+									  </el-form-item>
+									</el-form>
+                                </div>
+                                <!--detectdata-->
+                                <div class="footer">
+                                    <hr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+				<div class="row" style="margin-top:-60px" v-show="showSetInfo.fruit.changeFruit">
+					<br>
+					<br>
+					<br>
+                    <h4 class="title" style="text-align: center">修改作物</h4>
+                    <div class="col-md-12">
+                        <div class="card">
+                        
+                            <div class="content" >
+                                
+                                <div class="changedata">
+                                    <el-table :data="farmFruits" style="width: 100%">
+                                        <el-table-column  label="作物" min-width="30" align="center">
+                                            <template scope="scope">
+                                                <el-input v-model="scope.row.fruitName" readonly></el-input>
+                                            </template>
+                                        </el-table-column>
+                                        
+                                        <el-table-column label="操作" min-width="50" align="center">
+                                            <template scope="scope">
+                                                <el-button   size="small" type="primary" @click="changeFruitData(scope.$index, scope.row)">修改</el-button>
+                                                <el-button size="small" type="danger" @click="deleteFruit(scope.$index, scope.row)">删除 </el-button> 
+                                            </template>
+                                        </el-table-column>
+
+                                    </el-table>
+                                 
+                                </div><!--detectdata-->
+                                <div class="footer">
+                                    <hr>
+                                </div>
+                            </div>
+                        </div>
+                        
+                      </div>
+                    </div>
+                    
+                    <div class="row" style="margin-top:-60px" v-show="showSetInfo.fruit.changeData">
+                    <br>
+					<br>
+					<br>
+                    <h4 class="title" style="text-align: center">修改作物</h4>
+                    <div class="col-md-12">
+                        <div class="card">
+                            
+                            <div class="content" >
+                               	<div class="detectdata"  style="width:55%">
+                                    <el-form :model="fruitRuleForm" :rules="fruitRules" ref="fruitRuleForm" label-width="120px" class="demo-ruleForm">
+									  <el-form-item label="水果名" prop="fruitName">
+									    <el-input v-model="fruitRuleForm.fruitName"></el-input>
+									  </el-form-item>
+									  <el-form-item label="特征描述" prop="feature" >
+									    <el-input v-model="fruitRuleForm.feature" type="textarea" autosize></el-input>
+									  </el-form-item>
+									  <el-form-item label="最大空气温度" prop="maxAirTemp" >
+									    <el-input v-model="fruitRuleForm.maxAirTemp" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="最小空气温度" prop="minAirTemp" >
+									    <el-input v-model="fruitRuleForm.minAirTemp" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="最大空气湿度" prop="maxAirHumi" >
+									    <el-input v-model="fruitRuleForm.maxAirHumi" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="最小空气湿度" prop="minAirHumi">
+									    <el-input v-model="fruitRuleForm.minAirHumi" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="最大土壤温度" prop="maxSoilTemp" >
+									    <el-input v-model="fruitRuleForm.maxSoilTemp" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="最小土壤温度" prop="minSoilTemp">
+									    <el-input v-model="fruitRuleForm.minSoilTemp" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="最大土壤湿度" prop="maxSoilHumi" >
+									    <el-input v-model="fruitRuleForm.maxSoilHumi" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="最小土壤湿度" prop="minSoilHumi">
+									    <el-input v-model="fruitRuleForm.minSoilHumi" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="最大光照强度" prop="maxLight" >
+									    <el-input v-model="fruitRuleForm.maxLight" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="最小光照强度" prop="minLight">
+									    <el-input v-model="fruitRuleForm.minLight" ></el-input>
+									  </el-form-item>
+									  <el-form-item align="center">
+									    <el-button type="primary" @click="changeFruitSubmit('fruitRuleForm')">立即修改</el-button>
+									    <el-button @click="cancel">取消</el-button>
+									  </el-form-item>
+									</el-form>
+                                </div>
+                            </div>
+                            
+                          </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                </div>
+
+            </div>
+
+
+
+        <footer class="footer">
+            <div class="container-fluid">
+                <div class="copyright pull-center">
+                   	 版本:1.0.0.00  &copy;2017, <a> 广西大学农业云</a>
+                </div>
+            </div>
+        </footer>
+        
+        </div>
+
+    </div>
+
+
+</body>
+
+
+
+
+</html>

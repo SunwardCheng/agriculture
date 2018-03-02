@@ -1,0 +1,39 @@
+.con4{
+     width: 400px;
+     height: auto;
+     overflow: hidden;
+     margin: 10px auto;
+     color: #4db3ff;
+}
+.con4 .btn{
+     width: 160px;
+     height: 40px;
+     line-height: 30px;
+     text-align: center;
+     background: #4db3ff;
+     display: block;
+     font-size: 16px;
+     border-radius: 5px;
+     border-color:#4db3ff;
+     top:-15px; 
+     left:90px; 
+}
+.upload{
+     float: left;
+     position: relative;
+     color:white;
+}
+.upload_pic{
+     display: block;
+     width: 100%;
+     height: 40px;
+     position: absolute;
+     left: 0;
+     top: 0;
+     opacity: 0;
+     border-radius: 5px;
+}
+#img{
+	border: 1px solid #4db3ff;
+	margin:20px 0 20px 50px;
+}

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>index.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script src="js/jquery-3.1.1.js" type="text/javascript"></script>
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+
+  </head>
+  
+  <body>
+		<table>
+			<!-- <tr>
+				<td>Node:</td>
+				<td><input type="text" name="node"/></td>
+			</tr> -->
+			<tr>
+				<td>FruitName:</td>
+				<td><input type="text" name="FruitName"/></td>
+			</tr>
+			<!-- <tr>
+				<td>Serial:</td>
+				<td><input type="text" name="Serial"/></td>
+			</tr> -->
+			
+			<tr>
+				<td><input id="queryData" type="button" value="Query"/></td>
+				<!-- <td><a href="">Add New Fruit</a></td> -->
+			</tr>
+		</table>
+	<br><br>
+	<div id="showtable">
+	
+	</div>
+	<script type="text/javascript">
+		$("#queryData").click(function(){
+		   var functionName="query.do";
+		   
+		   $.ajax({
+			    type:"post",
+	            url: "/agriculture/"+functionName, //servlet的url，注意要组合成table的html然后返回就行了
+	            async:true,
+	            cache:false,
+	            dateType: "json",
+	            data:{Node:$("input[name='Node']").val(),FruitName:$("input[name='FruitName']").val(),
+	            	Serial:$("input[name='Serial']").val()
+	            },
+	            success: function(data) {
+	            	var obj = $.parseJSON(data);
+	            	var tabstr="<table border=2><tr><th>水果种类</th><th>空气温度</th><th>空气湿度</th><th>"
+	            	+"光照强度</th><th>土壤温度</th><th>土壤湿度</th><th>空气精准温度</th><th>监测时间</th></tr>";
+	            	
+	            	for(var i=0;i<obj.length;i++){
+	            			
+	            		tabstr += "<tr><td>"+obj[i].fruitsName+"</td><td>"+obj[i].air_temperature+"</td><td>"
+	            		+obj[i].air_humidity+"</td><td>"+obj[i].illumination+"</td><td>"+obj[i].soil_temperature
+	            		+"</td><td>"+obj[i].soil_humidity+"</td><td>"+obj[i].air_acc_temperature+"</td><td>"
+	            		+obj[i].time+"</td></tr>";
+	           		}
+	            	$("#showtable").html(tabstr+"</table>");
+	            	},
+	            error: function (data) { alert("返回失败！"); }
+	      		});
+			
+			});
+		
+		
+	     
+ 	  	 	
+	</script>
+  </body>
+</html>

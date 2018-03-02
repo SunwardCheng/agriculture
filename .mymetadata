@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="agriculture"
+  id="myeclipse.1489149140135"
+  context-root="/agriculture"
+  j2ee-spec="6.0"
+  archive="agriculture.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+

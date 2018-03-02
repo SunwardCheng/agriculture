@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/agriculture/vue/assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/agriculture/vue/assets/img/favicon.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+    <title>农业信息云平台</title>
+
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+    <meta name="viewport" content="width=device-width" />
+
+    <link href="/agriculture/vue/assets/css/element.css" rel="stylesheet" />
+    <!-- Bootstrap core CSS     -->
+    <link href="/agriculture/vue/assets/css/bootstrap.min.css" rel="stylesheet" />
+
+
+    <!--  Paper Dashboard core CSS    -->
+    <link href="/agriculture/vue/assets/css/paper-dashboard.css" rel="stylesheet"/>
+
+
+    <!--  Fonts and icons     -->
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/agriculture/vue/assets/css/themify-icons.css" rel="stylesheet">
+
+
+    <script src="/agriculture/vue/assets/js/vue.js" type="text/javascript"></script>
+    <script src="/agriculture/vue/assets/js/element.js" type="text/javascript"></script>
+    <script src="/agriculture/vue/assets/js/vue-resource.js" type="text/javascript" ></script>
+
+    <!--   Core JS Files   -->
+    <script src="/agriculture/vue/assets/js/jquery-1.10.2.js" type="text/javascript"></script>
+    <script src="/agriculture/vue/assets/js/bootstrap.min.js" type="text/javascript"></script>
+	
+	<!-- 文件上传的样式 -->
+	<link href="/agriculture/vue/assets/css/fileupload.css" rel="stylesheet"/>
+</head>
+<body>
+
+<div class="wrapper" id="app">
+
+    <div class="sidebar" data-background-color="white" data-active-color="danger">
+
+        <!--
+            Tip 1: you can change the color of the sidebar's background using: data-background-color="white | black"
+            Tip 2: you can change the color of the active button using the data-active-color="primary | info | success | warning | danger"
+        -->
+
+        <div class="sidebar-wrapper">
+
+            <div class="logo">
+                <a href="#" class="simple-text">
+                    	设置
+                </a>
+            </div>
+            
+            <ul class="nav">
+            	<!-- <template scope="scope">
+            	</template> -->
+	            	<el-tree :data="setdata" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+            </ul>
+			
+			<div style="margin: 10px 0px 0px 180px">
+	           <a href="desktop.html" >返回桌面</a>
+			</div>
+    	</div>
+    </div>
+
+
+    <div class="main-panel" >
+        <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+            <!--<el-menu-item index="1"><i class="ti-panel">&nbsp;</i><a href="index.html">首页</a></el-menu-item>-->
+            <el-menu-item index="2"><i class="ti-info-alt">&nbsp;</i><a href="cropInfo.html">数据信息</a></el-menu-item>
+            <el-menu-item index="3"><i class="ti-video-camera">&nbsp;</i><a href="video.html">视频监控</a></el-menu-item>
+            <el-menu-item index="4"><i class="ti-settings">&nbsp;</i><a  :href="setUrl">设置</a></el-menu-item>
+
+            <div class="user">欢迎您
+                <span><a>{{userName}}</a></span>
+                <el-button type="text" style="color:red" @click="logout">退出</el-button>
+            </div>
+        </el-menu>
+
+
+
+        <div class="content" >
+
+            <div class="container-fluid">
+
+                <div class="row" v-show="showSetInfo.changeUser">
+                    <h4 class="title" style="text-align: center">修改信息</h4>
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="header">
+								<div style="text-align: center" v-show="isChange">
+                                        <el-button type="primary" @click="changeUser" center>点击修改</el-button>
+                                </div>
+                                
+                            </div>
+                            <div class="content">
+                                <div class="detectdata" v-show="changeData" style="width:60%">
+                                    <el-form :model="userRuleForm" :rules="userRules" ref="userRuleForm" label-width="100px" class="demo-userRuleForm">
+									  <el-form-item label="用户名" prop="name" >
+									    <el-input v-model="userName" readonly></el-input>
+									  </el-form-item>
+									  <el-form-item label="邮    箱" prop="email" >
+									    <el-input v-model="userRuleForm.email" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="联系电话" prop="phone" >
+									    <el-input v-model="userRuleForm.phone" ></el-input>
+									  </el-form-item>
+									  <el-form-item label="描    述" prop="depict" >
+									    <el-input v-model="userRuleForm.depict" ></el-input>
+									  </el-form-item>
+									  <el-form-item align="center">
+									    <el-button type="primary" @click="submitForm('userRuleForm')">确认</el-button>
+									    <el-button @click="cancel">取消</el-button>
+									  </el-form-item>
+									</el-form>
+                                </div>
+                                <!--detectdata-->
+                                <div class="footer">
+                                    <hr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                	<div class="row" v-show="showSetInfo.changePassword">
+                    <h4 class="title" style="text-align: center">修改密码</h4>
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="content">
+                                <div class="detectdata"  style="width:60%">
+                                    <el-form :model="passwordRuleForm" :rules="passwordRules" ref="passwordRuleForm" label-width="100px" class="demo-userRuleForm">
+									  <el-form-item label="用户名" prop="name" >
+									    <el-input v-model="userName" readonly></el-input>
+									  </el-form-item>
+									  <el-form-item label="旧密码" prop="oldpassword" >
+									    <el-input v-model="passwordRuleForm.oldpassword" type="password"></el-input>
+									  </el-form-item>
+									  <el-form-item label="新密码" prop="newpassword" >
+									    <el-input v-model="passwordRuleForm.newpassword" type="password" ></el-input>
+									  </el-form-item>
+									  <el-form-item align="center">
+									    <el-button type="primary" @click="submitPasswordForm('passwordRuleForm')">确认</el-button>
+									    <el-button @click="cancel">取消</el-button>
+									  </el-form-item>
+									</el-form>
+                                </div>
+                                <!--detectdata-->
+                                <div class="footer">
+                                    <hr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                
+                </div>
+
+            </div>
+
+
+        <footer class="footer">
+            <div class="container-fluid">
+                <div class="copyright pull-center">
+                   	 版本:1.0.0.00  &copy;2017, <a> 广西大学农业云</a>
+                </div>
+            </div>
+        </footer>
+
+        </div>
+
+</div>
+
+
+</body>
+<script src="/agriculture/vue/assets/js/userInfo.js"></script>
+
+
+
+</html>

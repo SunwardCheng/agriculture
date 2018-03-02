@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/agriculture/vue/assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/agriculture/vue/assets/img/favicon.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+    <title>农业信息云平台</title>
+
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+    <meta name="viewport" content="width=device-width" />
+
+    <link href="/agriculture/vue/assets/css/element.css" rel="stylesheet" />
+    <!-- Bootstrap core CSS     -->
+    <link href="/agriculture/vue/assets/css/bootstrap.min.css" rel="stylesheet" />
+
+
+    <!--  Paper Dashboard core CSS    -->
+    <link href="/agriculture/vue/assets/css/paper-dashboard.css" rel="stylesheet"/>
+
+
+    <!--  Fonts and icons     -->
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/agriculture/vue/assets/css/themify-icons.css" rel="stylesheet">
+
+    <script type="text/javascript" src="/agriculture/vue/assets/js/echarts-all.js"></script>
+
+    <script src="/agriculture/vue/assets/js/vue.js" type="text/javascript"></script>
+    <script src="/agriculture/vue/assets/js/element.js" type="text/javascript"></script>
+    <script src="/agriculture/vue/assets/js/vue-resource.js" type="text/javascript" ></script>
+
+    <!--   Core JS Files   -->
+    <script src="/agriculture/vue/assets/js/jquery-1.10.2.js" type="text/javascript"></script>
+    <script src="/agriculture/vue/assets/js/bootstrap.min.js" type="text/javascript"></script>
+
+
+    <!-- Paper Dashboard Core javascript and methods for Demo purpose -->
+    <script src="/agriculture/vue/assets/js/paper-dashboard.js"></script>
+
+
+</head>
+<body>
+
+<div class="wrapper">
+
+    <div class="sidebar" data-background-color="white" data-active-color="danger">
+
+        <!--
+            Tip 1: you can change the color of the sidebar's background using: data-background-color="white | black"
+            Tip 2: you can change the color of the active button using the data-active-color="primary | info | success | warning | danger"
+        -->
+
+        <div class="sidebar-wrapper">
+
+            <div class="logo">
+                <a href="#" class="simple-text">
+                    	信息
+                </a>
+            </div>
+
+           <!-- <ul class="nav">
+                <li>
+                    <a href="index.html">
+                        <i class="ti-panel"></i>
+                        <p>首页</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="cropInfo.html">
+                        <i class="ti-user"></i>
+                        <p>数据信息</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="video.html">
+                        <i class="ti-view-list-alt"></i>
+                        <p>视频监控</p>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="setInfo.html">
+                        <i class="ti-text"></i>
+                        <p>设置</p>
+                    </a>
+                </li>
+
+
+            </ul>-->
+            <ul class="nav">
+                <li class="active">
+
+                    <i class="ti-panel"></i>
+                    <p>基地信息</p>
+                    <ul class="nav word_wrap">
+                        <li >
+                            <p>基地ID：{{baseInfo.baseId}}</p>
+                        </li>
+                        <li>
+                            <p>基地名称：{{baseInfo.baseName}}</p>
+                        </li>
+                        <li>
+                            <p>种植作物：{{baseInfo.fruits}}</p>
+                        </li>
+                        <li>
+                            <p>基地面积：{{baseInfo.baseArea}}</p>
+                        </li>
+                        <li>
+                            <p>基地地址：{{baseInfo.baseAddr}}</p>
+                        </li>
+
+                        <a href="desktop.html" style="margin-left: 150px;">返回桌面</a>
+                    </ul>
+                </li>
+
+            </ul>
+
+
+        </div>
+    </div>
+
+
+    <div class="main-panel" id="app">
+        <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+            <!--<el-menu-item index="1"><i class="ti-panel">&nbsp;</i><a href="index.html">首页</a></el-menu-item>-->
+            <el-menu-item index="2"><i class="ti-info-alt">&nbsp;</i><a href="cropInfo.html">数据信息</a></el-menu-item>
+            <el-menu-item index="3"><i class="ti-video-camera">&nbsp;</i><a href="video.html">视频监控</a></el-menu-item>
+            <el-menu-item index="4"><i class="ti-settings">&nbsp;</i><a  href="setUrl">设置</a></el-menu-item>
+
+            <div class="user">欢迎您
+                <span><a>专家一号</a></span>
+                <el-button type="text" style="color:red" @click="logout">退出</el-button>
+            </div>
+        </el-menu>
+
+
+
+        <div class="content" >
+
+            <div class="container-fluid">
+
+                <div class="row">
+                    <h4 class="title" style="text-align: center">检测参数设置</h4>
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="header">
+
+                                <!--<p class="category">24 Hours performance</p>-->
+                                <div style="float: left;margin-left: 40px;" >
+                                    <el-select v-model="value" >
+                                        <el-option
+                                                v-for="item in fruits"
+                                                :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+
+                            </div>
+                            <div class="content">
+                                <div class="detectdata" >
+                                    <el-table :data="detectData" style="width: 100%">
+                                        <el-table-column  label="监控参数" min-width="180">
+                                            <template scope="scope">
+                                                <el-input v-model="scope.row.paramname"></el-input>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column label="阈值" min-width="180">
+                                            <template scope="scope">
+                                                <el-input v-model="scope.row.value">
+                                                </el-input>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column label="操作" min-width="50">
+                                            <template scope="scope">
+                                                <el-button   size="small" type="danger" @click="detectDelete(scope.$index, scope.row)">删除</el-button>
+                                            </template>
+                                        </el-table-column>
+
+                                    </el-table>
+                                    <div class="adddetectdata">
+                                        <el-button type="primary" @click="addDetect">继续增加</el-button>
+                                        <el-button type="primary" @click="saveDetect">保存</el-button>
+                                    </div>
+                                </div><!--detectdata-->
+                                <div class="footer">
+                                    <!--  <div class="chart-legend">
+                                          <i class="fa fa-circle text-info"></i> Open
+                                          <i class="fa fa-circle text-danger"></i> Click
+                                          <i class="fa fa-circle text-warning"></i> Click Second Time
+                                      </div>-->
+                                    <hr>
+                                    <!--<div class="stats">
+                                        <i class="ti-reload"></i> 3分钟前更新
+                                    </div>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+
+
+        </div>
+
+
+        <footer class="footer">
+            <div class="container-fluid">
+                <div class="copyright pull-center">
+                    版本:1.0.0.00  &copy;2017, </a> 广西大学农业云</a>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+</div>
+
+
+</body>
+<script>
+	const storage = window.localStorage;
+	//用户角色
+	const userType  = storage.userType;
+    var markerArr;
+    var app = new Vue({
+        el:'#app',
+        data() {
+        return {
+            activeIndex: '4',
+            //基地信息
+            baseInfo:{
+            baseId:"",
+            baseName:"",
+            fruits:"",
+            baseArea:"",
+            baseAddr:""
+        	},
+            //水果种类
+            fruits:[{
+                value: '无核荔枝',
+            }, {
+                value: '桂味荔枝',
+            }, {
+                value: '金煌芒',
+            }, {
+                value: '妃子笑',
+            }],
+            value: '无核荔枝',
+            //设置的url
+            setUrl:'',
+            detectData:[{
+                paramname:'空气温度',
+                value:''
+            },{
+                paramname:'空气湿度',
+                value:''
+            },{
+                paramname:'光照强度',
+                value:''
+            },{
+                paramname:'土壤温度',
+                value:''
+            },{
+                paramname:'土壤湿度',
+                value:''
+            }]
+
+        };
+    },
+    created: function(){
+        var sessionId =  storage.sessionId;
+        //用户角色
+       
+        if(sessionId==""||sessionId==null){
+        	window.location.href="login.html";
+        }
+        if(userType=="farmowner"){
+        	this.setUrl = "userInfo.html";
+        }else{
+        	this.setUrl = "serInfo.html";
+        }
+    },
+    
+    methods:{
+        handleSelect:function(key, keyPath) {
+            console.log(key, keyPath);
+        },
+        //删除检测参数
+        detectDelete(index,row){
+            this.detectData.splice(index,1);
+        },
+        //增加检测参数
+        addDetect:function(){
+            var a={
+                paramname:'',
+                value:''
+            }
+            this.detectData.push(a);
+        },
+        //保存提交
+        saveDetect:function(){
+            this.$http.post('/agriculture/save.do',this.detectData,this.bases.label,this.fruits.label).then( res => {
+                console.log(res);
+        })
+    },
+    //退出登录
+    logout:function(){
+        var othis = this;
+        this.$http.post("/agriculture/logout.do").then( function(res){
+        	window.localStorage.clear();
+            console.log(res);
+            window.location.href="login.html";
+        });
+    }
+    }
+    })
+</script>
+
+
+
+
+</html>
